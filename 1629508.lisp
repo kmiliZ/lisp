@@ -51,22 +51,22 @@ test cases:
     (remove-duplicate '(a)) => (a)
 |#
 
-(defun remove-duplicate(x)
-    (if (null x)
-        x
-        (if (is-member (car x) (cdr x))
-            (remove-duplicate (cdr x))
-            (cons (car x) (remove-duplicate (cdr x)))
-        )
-    )
-)
-
 (defun is-member(x L)
     (if (null L)
         nil
         (if (equal x (car L))
             t
             (is-member x (cdr L))
+        )
+    )
+)
+
+(defun remove-duplicate(x)
+    (if (null x)
+        x
+        (if (is-member (car x) (cdr x))
+            (remove-duplicate (cdr x))
+            (cons (car x) (remove-duplicate (cdr x)))
         )
     )
 )
@@ -113,9 +113,6 @@ test cases:
     (split '(1 2 3 4 5 6)) => ((1 3 5) (2 4 6))
     (split '((a) (b c) (d e f) g h))  => (((b c) g) ((a) (d e f) h))
 |#
-(defun split (L)
-    (list (get_even L) (get_odd L))
-)
 
 (defun get_even (L)
     (if (or (null L) (null (car (cdr L))))
@@ -129,6 +126,10 @@ test cases:
         nil
         (cons (car L) (get_odd (cdr (cdr L))))
     )
+)
+
+(defun split (L)
+    (list (get_even L) (get_odd L))
 )
 
 
@@ -161,16 +162,7 @@ test cases:
                                     (b c g) (b d e) (b d f) (b d g) (b e f) (b e g) (b f g) (c d e) (c d f)
                                     (c d g) (c e f) (c e g) (c f g) (d e f) (d e g) (d f g) (e f g))
 |#
-(defun subsets(L S)
-    (if (or (equal S 0) (> S (size L)))
-        nil
-        (append
-                (build-set (list (car L)) (cdr L) (- S 1))
-                (subsets (cdr L) S)
-            )
-        
-    )
-)
+
 
 (defun size(L)
     (if (null L)
@@ -190,6 +182,17 @@ test cases:
                 (build-set building (cdr remaining) n)
             )
         )
+    )
+)
+
+(defun subsets(L S)
+    (if (or (equal S 0) (> S (size L)))
+        nil
+        (append
+                (build-set (list (car L)) (cdr L) (- S 1))
+                (subsets (cdr L) S)
+            )
+        
     )
 )
 
@@ -258,7 +261,7 @@ How this function works:
         2. origional-x: the element we started with. this stays the same..
         3. travelling-list: the list of pairs we need to look at
         4. full-list: the list of pairs we have. this stays the same.
-    get-reached works as follows:
+    helper function get-reached works as follows:
     lets denoted the first element of the first pair in list as A and the second element as B.
     If x equals to A, that means B is reachable to x, so then the function calls itself to get the list of 
     elements that are reachable from B, with the travelling-list being the full-list.
@@ -279,13 +282,6 @@ test cases:
     (reached 'a '((a a) (a b))) => (b)
 |#
 
-(defun reached(x L)
-    (let ((new-list (remove-duplicate L)))
-        (get-reached x x new-list new-list)
-    )
-    
-)
-
 (defun get-reached(x origional-x travelling-list full-list)
 (let ((A (car (car travelling-list))) (B (car (cdr (car travelling-list))) ))
     (cond 
@@ -298,6 +294,13 @@ test cases:
         )
     
 ))
+
+(defun reached(x L)
+    (let ((new-list (remove-duplicate L)))
+        (get-reached x x new-list new-list)
+    )
+    
+)
 
 
 #|QUESTION 7.
@@ -324,9 +327,7 @@ test cases:
 (rank '(google shopify aircanada amazon delta) '((google shopify) (google aircanada) (amazon aircanada) (aircanada delta) (google google))) => (AIRCANADA SHOPIFY DELTA GOOGLE AMAZON)
 |#
 
-(defun rank(S L)
-    (get-webs(my-sort (get-rank-pairs S (remove-duplicate L))))
-)
+
 
 (defun get-ranks(web L) 
     (cond
@@ -362,5 +363,9 @@ test cases:
         (cons (car (car L)) (get-webs (cdr L)))
     )
 ) 
+
+(defun rank(S L)
+    (get-webs(my-sort (get-rank-pairs S (remove-duplicate L))))
+)
 
 
